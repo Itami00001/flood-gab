@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J HUB - Профиль</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">J HUB</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Каталог</a></li>
+                <li><a href="rentals.html">Аренда</a></li>
+                <li><a href="profile.html">Профиль</a></li>
+                <li><a href="login.html" id="loginLink">Войти</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="profile">
+        <div class="container">
+            <h2>Мой профиль</h2>
+            <div id="profileInfo">
+                <!-- Profile info will be loaded here -->
+            </div>
+            <div class="profile-sections">
+                <div class="section">
+                    <h3>Мои покупки</h3>
+                    <div id="mySales"></div>
+                </div>
+                <div class="section">
+                    <h3>Мои аренды</h3>
+                    <div id="myRentals"></div>
+                </div>
+                <div class="section">
+                    <h3>Мои тест-драйвы</h3>
+                    <div id="myTestDrives"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 J HUB. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/catalog.js"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J HUB - Автосалон</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">J HUB</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Каталог</a></li>
+                <li><a href="rentals.html">Аренда</a></li>
+                <li><a href="profile.html">Профиль</a></li>
+                <li><a href="login.html" id="loginLink">Войти</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1>J HUB — твой автомобиль мечты</h1>
+            <p>Продажа, аренда и тест-драйв автомобилей</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Авто</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">10</span>
+                    <span class="stat-label">Брендов</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Проверено</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="catalog">
+        <div class="container">
+            <h2>Каталог автомобилей</h2>
+            <div class="filters">
+                <input type="text" id="brandFilter" placeholder="Марка">
+                <select id="statusFilter">
+                    <option value="">Все статусы</option>
+                    <option value="available">Доступен</option>
+                    <option value="sold">Продан</option>
+                    <option value="rented">В аренде</option>
+                </select>
+                <input type="number" id="minPrice" placeholder="Мин. цена">
+                <input type="number" id="maxPrice" placeholder="Макс. цена">
+                <button onclick="applyFilters()">Применить</button>
+            </div>
+            <div class="car-grid" id="carGrid">
+                <!-- Cars will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 J HUB. Все права защищены.</p>
+            <div class="contacts">
+                <p>Телефон: +7 (900) 123-45-67</p>
+                <p>Email: info@jhub.com</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/catalog.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J HUB - Карточка автомобиля</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">J HUB</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Каталог</a></li>
+                <li><a href="rentals.html">Аренда</a></li>
+                <li><a href="profile.html">Профиль</a></li>
+                <li><a href="login.html" id="loginLink">Войти</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="car-detail">
+        <div class="container">
+            <div id="carDetail">
+                <!-- Car details will be loaded here -->
+            </div>
+            <div class="car-actions">
+                <button onclick="buyCar()">Купить</button>
+                <button onclick="rentCar()">Арендовать</button>
+                <button onclick="testDrive()">Тест-драйв</button>
+            </div>
+            <div class="car-history">
+                <h3>История</h3>
+                <div id="carHistory">
+                    <!-- History will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 J HUB. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/catalog.js"></script>
+    <script>
+        const carId = new URLSearchParams(window.location.search).get('id');
+        loadCarDetail(carId);
+    </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J HUB - Админ-панель</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">J HUB</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Каталог</a></li>
+                <li><a href="rentals.html">Аренда</a></li>
+                <li><a href="profile.html">Профиль</a></li>
+                <li><a href="admin.html">Админ</a></li>
+                <li><a href="login.html" id="loginLink">Войти</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="admin">
+        <div class="container">
+            <h2>Админ-панель</h2>
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="showTab('users')">Пользователи</button>
+                <button class="tab-btn" onclick="showTab('cars')">Авто</button>
+                <button class="tab-btn" onclick="showTab('sales')">Продажи</button>
+                <button class="tab-btn" onclick="showTab('rentals')">Аренда</button>
+                <button class="tab-btn" onclick="showTab('testdrives')">Тест-драйвы</button>
+                <button class="tab-btn" onclick="showTab('statistics')">Статистика</button>
+            </div>
+            <div class="admin-content">
+                <div id="usersTab" class="tab-content active">
+                    <h3>Пользователи</h3>
+                    <div id="usersTable"></div>
+                </div>
+                <div id="carsTab" class="tab-content">
+                    <h3>Автомобили</h3>
+                    <div id="carsTable"></div>
+                </div>
+                <div id="salesTab" class="tab-content">
+                    <h3>Продажи</h3>
+                    <div id="salesTable"></div>
+                </div>
+                <div id="rentalsTab" class="tab-content">
+                    <h3>Аренда</h3>
+                    <div id="rentalsTable"></div>
+                </div>
+                <div id="testdrivesTab" class="tab-content">
+                    <h3>Тест-драйвы</h3>
+                    <div id="testdrivesTable"></div>
+                </div>
+                <div id="statisticsTab" class="tab-content">
+                    <h3>Статистика</h3>
+                    <div id="statisticsContent"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 J HUB. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/catalog.js"></script>
+</body>
+</html>

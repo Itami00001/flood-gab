@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J HUB - Аренда</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">J HUB</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Каталог</a></li>
+                <li><a href="rentals.html">Аренда</a></li>
+                <li><a href="profile.html">Профиль</a></li>
+                <li><a href="login.html" id="loginLink">Войти</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="rentals">
+        <div class="container">
+            <h2>Аренда автомобилей</h2>
+            <div class="date-filters">
+                <label>Начало: <input type="date" id="startDate"></label>
+                <label>Конец: <input type="date" id="endDate"></label>
+                <button onclick="searchAvailable()">Найти доступные</button>
+            </div>
+            <div class="car-grid" id="availableCars">
+                <!-- Available cars will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 J HUB. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/catalog.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
