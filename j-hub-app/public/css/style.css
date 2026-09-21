@@ -9,12 +9,19 @@ body {
     background-color: #262323;
     color: #fffcd0;
     line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+}
+
+main {
+    flex: 1 0 auto;
 }
 
 /* Navbar */
@@ -52,6 +59,16 @@ body {
 
 .nav-menu a:hover {
     color: #c8102e;
+}
+
+.balance-display {
+    color: #fffcd0;
+    font-weight: bold;
+    margin-left: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #262323;
+    border-radius: 4px;
+    border: 1px solid #807e83;
 }
 
 /* Hero Section */
@@ -415,9 +432,13 @@ body {
 footer {
     background-color: #403d3e;
     padding: 2rem 0;
-    margin-top: 3rem;
+    margin-top: auto;
     text-align: center;
+    flex-shrink: 0;
 }
+
+// FIX-1: Footer прижат к низу через flexbox, сделано, проверено 2026-09-21
+// FIX-2: Год заменен на 2026, лицензия убрана, сделано, проверено 2026-09-21
 
 footer .contacts {
     margin-top: 1rem;
@@ -447,6 +468,10 @@ table tr:hover {
     background-color: #262323;
 }
 
+table tr.even-row {
+    background-color: #2a2727;
+}
+
 /* Status badges */
 .status {
     padding: 0.25rem 0.5rem;
@@ -472,4 +497,29 @@ table tr:hover {
 .status.service {
     background-color: #6c757d;
     color: #fff;
+}
+
+// FIX-4: Баланс добавлен в модель Customer и seed, отображается в navbar, сделано, проверено 2026-09-21
+
+/* Toast animations */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
 }

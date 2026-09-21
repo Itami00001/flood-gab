@@ -99,6 +99,25 @@ async function getCarStats() {
     return fetchAPI('/admin/cars/stats');
 }
 
+async function topupUserBalance(customerId, amount) {
+    return fetchAPI(`/admin/users/${customerId}/topup`, {
+        method: 'PUT',
+        body: JSON.stringify({ amount }),
+    });
+}
+
+async function getUsers() {
+    return fetchAPI('/users');
+}
+
+async function getCustomers() {
+    return fetchAPI('/customers');
+}
+
+async function getRentals() {
+    return fetchAPI('/rentals');
+}
+
 // Customers API
 async function getCustomerSales(customerId) {
     return fetchAPI(`/customers/${customerId}/sales`);
@@ -110,4 +129,67 @@ async function getCustomerRentals(customerId) {
 
 async function getCustomerTestDrives(customerId) {
     return fetchAPI(`/customers/${customerId}/testdrives`);
+}
+
+// Additional API functions for FIX-3
+async function getCustomerByUserId(userId) {
+    const customers = await fetchAPI('/customers');
+    return customers.find(c => c.user_id === userId);
+}
+
+async function getEmployees() {
+    return fetchAPI('/employees');
+}
+
+async function updateCustomer(customerId, data) {
+    return fetchAPI(`/customers/${customerId}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+    });
+}
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 2rem;
+        background-color: ${type === 'error' ? '#c8102e' : type === 'success' ? '#2d6a4f' : '#403d3e'};
+        color: #fffcd0;
+        border-radius: 4px;
+        z-index: 10000;
+        animation: slideIn 0.3s ease-out;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Balance display update function
+async function updateBalanceDisplay() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) return;
+    
+    try {
+        const customer = await getCustomerByUserId(user.id);
+        if (customer) {
+            const balanceDisplay = document.getElementById('balanceDisplay');
+            if (balanceDisplay) {
+                balanceDisplay.textContent = `Баланс: ${formatPrice(customer.balance)} COIN`;
+                balanceDisplay.style.display = 'inline';
+            }
+        }
+    } catch (error) {
+        console.error('Error updating balance display:', error);
+    }
+}
+
+function formatPrice(price) {
+    return new Intl.NumberFormat('ru-RU').format(price);
 }

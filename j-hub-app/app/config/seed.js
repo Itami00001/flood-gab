@@ -38,7 +38,8 @@ const seed = async () => {
       user_id: testUser.id,
       phone: "+79007654321",
       address: "Test Address 123",
-      passport_data: "1234 567890"
+      passport_data: "1234 567890",
+      balance: 7000000
     });
 
     const cars = [
@@ -210,8 +211,8 @@ const seed = async () => {
       car_id: createdCars[3].id,
       customer_id: customer.id,
       employee_id: employee.id,
-      start_date: new Date('2024-01-01'),
-      end_date: new Date('2024-01-07'),
+      start_date: new Date('2026-01-01'),
+      end_date: new Date('2026-01-07'),
       total_price: 50000,
       status: "completed"
     });
@@ -220,8 +221,8 @@ const seed = async () => {
       car_id: createdCars[4].id,
       customer_id: customer.id,
       employee_id: employee.id,
-      start_date: new Date('2024-02-01'),
-      end_date: new Date('2024-02-05'),
+      start_date: new Date('2026-02-01'),
+      end_date: new Date('2026-02-05'),
       total_price: 35000,
       status: "completed"
     });
@@ -230,8 +231,8 @@ const seed = async () => {
       car_id: createdCars[5].id,
       customer_id: customer.id,
       employee_id: employee.id,
-      start_date: new Date('2024-03-01'),
-      end_date: new Date('2024-03-10'),
+      start_date: new Date('2026-03-01'),
+      end_date: new Date('2026-03-10'),
       total_price: 70000,
       status: "active"
     });

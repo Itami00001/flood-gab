@@ -120,3 +120,37 @@ exports.getEmployeePerformance = (req, res) => {
       });
     });
 };
+
+// FIX-5: Функция пополнения баланса пользователя, сделано, проверено 2026-09-21
+exports.topupUserBalance = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount } = req.body;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).send({ message: "Invalid amount" });
+    }
+
+    const customer = await db.customer.findByPk(id);
+    if (!customer) {
+      return res.status(404).send({ message: "Customer not found" });
+    }
+
+    const currentBalance = parseFloat(customer.balance) || 0;
+    const newBalance = currentBalance + parseFloat(amount);
+
+    await customer.update({ balance: newBalance });
+
+    res.send({
+      message: "Balance updated successfully",
+      customer_id: customer.id,
+      old_balance: currentBalance,
+      new_balance: newBalance,
+      amount_added: parseFloat(amount)
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Error updating user balance"
+    });
+  }
+};

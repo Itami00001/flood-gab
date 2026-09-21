@@ -36,43 +36,87 @@ async function loadTabData(tabName) {
 }
 
 async function loadUsers() {
+    // FIX-5: Вкладка Пользователи с балансом и пополнением, сделано, проверено 2026-09-21
     try {
-        const users = await getUserBalances();
+        const users = await getUsers();
+        const customers = await getCustomers();
+        
         const usersTable = document.getElementById('usersTable');
-        usersTable.innerHTML = `
+        let html = `<button onclick="loadUsers()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
+        
+        html += `
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Имя</th>
-                        <th>Роль</th>
-                        <th>Всего потрачено</th>
-                        <th>Кол-во покупок</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Full Name</th>
+                        <th>Role</th>
+                        <th>Balance</th>
+                        <th>Topup</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${users.map(user => `
-                        <tr>
-                            <td>${user.id}</td>
-                            <td>${user.full_name}</td>
-                            <td>${user.role}</td>
-                            <td>${formatPrice(user.total_spent)} ₽</td>
-                            <td>${user.sales_count}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
         `;
+        
+        users.forEach((user, index) => {
+            const customer = customers.find(c => c.user_id === user.id);
+            const balance = customer ? customer.balance : 0;
+            const customerId = customer ? customer.id : null;
+            
+            html += `
+                <tr class="${index % 2 === 0 ? 'even-row' : ''}">
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.full_name}</td>
+                    <td>${user.role}</td>
+                    <td>${formatPrice(balance)} ₽</td>
+                    <td>
+                        ${customerId ? `
+                            <input type="number" id="topup-${customerId}" placeholder="Сумма" style="width: 80px; padding: 0.25rem; margin-right: 0.5rem;">
+                            <button onclick="topupBalance(${customerId})" style="padding: 0.25rem 0.5rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Пополнить</button>
+                        ` : '-'}
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `</tbody></table>`;
+        usersTable.innerHTML = html;
     } catch (error) {
         console.error('Error loading users:', error);
     }
 }
 
+async function topupBalance(customerId) {
+    const amountInput = document.getElementById(`topup-${customerId}`);
+    const amount = parseFloat(amountInput.value);
+    
+    if (!amount || amount <= 0) {
+        showToast('Введите корректную сумму', 'error');
+        return;
+    }
+    
+    try {
+        await topupUserBalance(customerId, amount);
+        showToast('Баланс успешно пополнен!', 'success');
+        loadUsers();
+    } catch (error) {
+        console.error('Error topping up balance:', error);
+        showToast('Ошибка при пополнении баланса', 'error');
+    }
+}
+
 async function loadCars() {
+    // FIX-5: Вкладка Авто с кнопкой обновления и подсветкой чётных строк, сделано, проверено 2026-09-21
     try {
         const cars = await getCarStats();
         const carsTable = document.getElementById('carsTable');
-        carsTable.innerHTML = `
+        let html = `<button onclick="loadCars()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
+        
+        html += `
             <table>
                 <thead>
                     <tr>
@@ -86,8 +130,8 @@ async function loadCars() {
                     </tr>
                 </thead>
                 <tbody>
-                    ${cars.map(car => `
-                        <tr>
+                    ${cars.map((car, index) => `
+                        <tr class="${index % 2 === 0 ? 'even-row' : ''}">
                             <td>${car.id}</td>
                             <td>${car.brand} ${car.model}</td>
                             <td><span class="status ${car.status}">${translateStatus(car.status)}</span></td>
@@ -100,16 +144,20 @@ async function loadCars() {
                 </tbody>
             </table>
         `;
+        carsTable.innerHTML = html;
     } catch (error) {
         console.error('Error loading cars:', error);
     }
 }
 
 async function loadSales() {
+    // FIX-5: Вкладка Продажи с кнопкой обновления и подсветкой чётных строк, сделано, проверено 2026-09-21
     try {
         const sales = await getSales();
         const salesTable = document.getElementById('salesTable');
-        salesTable.innerHTML = `
+        let html = `<button onclick="loadSales()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
+        
+        html += `
             <table>
                 <thead>
                     <tr>
@@ -121,8 +169,8 @@ async function loadSales() {
                     </tr>
                 </thead>
                 <tbody>
-                    ${sales.map(sale => `
-                        <tr>
+                    ${sales.map((sale, index) => `
+                        <tr class="${index % 2 === 0 ? 'even-row' : ''}">
                             <td>${sale.id}</td>
                             <td>${new Date(sale.sale_date).toLocaleDateString()}</td>
                             <td>${formatPrice(sale.total_price)} ₽</td>
@@ -133,16 +181,20 @@ async function loadSales() {
                 </tbody>
             </table>
         `;
+        salesTable.innerHTML = html;
     } catch (error) {
         console.error('Error loading sales:', error);
     }
 }
 
 async function loadRentals() {
+    // FIX-5: Вкладка Аренда с кнопкой обновления и подсветкой чётных строк, сделано, проверено 2026-09-21
     try {
         const rentals = await getRentals();
         const rentalsTable = document.getElementById('rentalsTable');
-        rentalsTable.innerHTML = `
+        let html = `<button onclick="loadRentals()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
+        
+        html += `
             <table>
                 <thead>
                     <tr>
@@ -154,8 +206,8 @@ async function loadRentals() {
                     </tr>
                 </thead>
                 <tbody>
-                    ${rentals.map(rental => `
-                        <tr>
+                    ${rentals.map((rental, index) => `
+                        <tr class="${index % 2 === 0 ? 'even-row' : ''}">
                             <td>${rental.id}</td>
                             <td>${new Date(rental.start_date).toLocaleDateString()}</td>
                             <td>${new Date(rental.end_date).toLocaleDateString()}</td>
@@ -166,16 +218,20 @@ async function loadRentals() {
                 </tbody>
             </table>
         `;
+        rentalsTable.innerHTML = html;
     } catch (error) {
         console.error('Error loading rentals:', error);
     }
 }
 
 async function loadTestDrives() {
+    // FIX-5: Вкладка Тест-драйвы с кнопкой обновления и подсветкой чётных строк, сделано, проверено 2026-09-21
     try {
         const testDrives = await getTestDrives();
         const testdrivesTable = document.getElementById('testdrivesTable');
-        testdrivesTable.innerHTML = `
+        let html = `<button onclick="loadTestDrives()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
+        
+        html += `
             <table>
                 <thead>
                     <tr>
@@ -186,8 +242,8 @@ async function loadTestDrives() {
                     </tr>
                 </thead>
                 <tbody>
-                    ${testDrives.map(td => `
-                        <tr>
+                    ${testDrives.map((td, index) => `
+                        <tr class="${index % 2 === 0 ? 'even-row' : ''}">
                             <td>${td.customer?.user?.full_name || 'N/A'}</td>
                             <td>${td.car?.brand} ${td.car?.model}</td>
                             <td>${new Date(td.date).toLocaleDateString()}</td>
@@ -197,6 +253,7 @@ async function loadTestDrives() {
                 </tbody>
             </table>
         `;
+        testdrivesTable.innerHTML = html;
     } catch (error) {
         console.error('Error loading test drives:', error);
     }

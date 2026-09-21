@@ -2,12 +2,13 @@ let currentUser = null;
 
 function setCurrentUser(user) {
     currentUser = user;
-    localStorage.setItem('currentUser', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
     updateAuthUI();
+    updateBalanceDisplay();
 }
 
 function getCurrentUser() {
-    const stored = localStorage.getItem('currentUser');
+    const stored = localStorage.getItem('user');
     if (stored) {
         currentUser = JSON.parse(stored);
     }
@@ -16,7 +17,7 @@ function getCurrentUser() {
 
 function logout() {
     currentUser = null;
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem('user');
     updateAuthUI();
     window.location.href = 'index.html';
 }
@@ -119,6 +120,7 @@ function formatPrice(price) {
 document.addEventListener('DOMContentLoaded', () => {
     getCurrentUser();
     updateAuthUI();
+    updateBalanceDisplay();
 
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {

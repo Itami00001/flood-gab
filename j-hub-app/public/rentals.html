@@ -14,28 +14,40 @@
                 <li><a href="index.html">Каталог</a></li>
                 <li><a href="rentals.html">Аренда</a></li>
                 <li><a href="profile.html">Профиль</a></li>
+                <li><span id="balanceDisplay" class="balance-display" style="display: none;">Баланс: 0 COIN</span></li>
                 <li><a href="login.html" id="loginLink">Войти</a></li>
             </ul>
         </div>
     </nav>
 
+    <main>
     <section class="rentals">
         <div class="container">
             <h2>Аренда автомобилей</h2>
             <div class="date-filters">
+                <label>Статус: 
+                    <select id="statusFilter">
+                        <option value="">Все статусы</option>
+                        <option value="active">Активные</option>
+                        <option value="completed">Завершённые</option>
+                        <option value="cancelled">Отменённые</option>
+                    </select>
+                </label>
                 <label>Начало: <input type="date" id="startDate"></label>
                 <label>Конец: <input type="date" id="endDate"></label>
-                <button onclick="searchAvailable()">Найти доступные</button>
+                <button onclick="filterRentals()">Фильтровать</button>
+                <button onclick="loadRentalsTable()">Сбросить</button>
             </div>
-            <div class="car-grid" id="availableCars">
-                <!-- Available cars will be loaded here -->
+            <div id="rentalsTable">
+                <!-- Rentals table will be loaded here -->
             </div>
         </div>
     </section>
+    </main>
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 J HUB. Все права защищены.</p>
+            <p>&copy; 2026 J HUB. Все права защищены.</p>
         </div>
     </footer>
 
