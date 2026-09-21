@@ -53,7 +53,7 @@ const seed = async () => {
         status: "available",
         equipment: "Premium package",
         photo_url: "",
-        vin: "JTDKN3DU5A0000001"
+        vin: "JTDKN3DU5A000001"
       },
       {
         articul: "NIS001",
@@ -66,7 +66,7 @@ const seed = async () => {
         status: "available",
         equipment: "Sport package",
         photo_url: "",
-        vin: "1N4AL3AP4DN0000001"
+        vin: "1N4AL3AP4DN000001"
       },
       {
         articul: "HON001",
@@ -79,7 +79,7 @@ const seed = async () => {
         status: "available",
         equipment: "Luxury package",
         photo_url: "",
-        vin: "1HGCM82633A0000001"
+        vin: "1HGCM82633A000001"
       },
       {
         articul: "MAZ001",
@@ -92,7 +92,7 @@ const seed = async () => {
         status: "available",
         equipment: "Signature package",
         photo_url: "",
-        vin: "JM3KFBCM3K00000001"
+        vin: "JM3KFBCM3K0000001"
       },
       {
         articul: "MIT001",
@@ -105,7 +105,7 @@ const seed = async () => {
         status: "available",
         equipment: "SE package",
         photo_url: "",
-        vin: "JA4J2AAS5MU0000001"
+        vin: "JA4J2AAS5MU000001"
       },
       {
         articul: "SUB001",
@@ -118,7 +118,7 @@ const seed = async () => {
         status: "available",
         equipment: "Touring package",
         photo_url: "",
-        vin: "JF2SJABC6NH0000001"
+        vin: "JF2SJABC6NH000001"
       },
       {
         articul: "LEX001",
@@ -131,7 +131,7 @@ const seed = async () => {
         status: "available",
         equipment: "Ultra Luxury package",
         photo_url: "",
-        vin: "JTHBZ1BL2G50000001"
+        vin: "JTHBZ1BL2G5000001"
       },
       {
         articul: "INF001",
@@ -144,7 +144,7 @@ const seed = async () => {
         status: "available",
         equipment: "Red Sport 400",
         photo_url: "",
-        vin: "JN1EV1AR5FM0000001"
+        vin: "JN1EV1AR5FM000001"
       },
       {
         articul: "ACU001",
@@ -157,7 +157,7 @@ const seed = async () => {
         status: "available",
         equipment: "A-Spec package",
         photo_url: "",
-        vin: "5J8TC2H36ML0000001"
+        vin: "5J8TC2H36ML000001"
       },
       {
         articul: "TOY002",
@@ -170,7 +170,7 @@ const seed = async () => {
         status: "available",
         equipment: "Limited package",
         photo_url: "",
-        vin: "2T3BF1DV5PW0000001"
+        vin: "2T3BF1DV5PW000001"
       }
     ];
 
