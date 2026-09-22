@@ -179,6 +179,16 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.addEventListener('submit', handleLogin);
     }
 
+    // Quick login buttons
+    const quickLoginAdmin = document.getElementById('quickLoginAdmin');
+    if (quickLoginAdmin) {
+        quickLoginAdmin.addEventListener('click', () => quickLogin('admin', 'adminadmin'));
+    }
+    const quickLoginTest = document.getElementById('quickLoginTest');
+    if (quickLoginTest) {
+        quickLoginTest.addEventListener('click', () => quickLogin('test', 'testtest'));
+    }
+
     if (document.getElementById('profileInfo')) {
         loadProfile();
     }
