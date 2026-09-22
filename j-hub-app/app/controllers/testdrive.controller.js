@@ -40,7 +40,7 @@ exports.findAll = (req, res) => {
 
   TestDrive.findAll({
     where,
-    include: ["customer", "car", "employee"]
+    order: [['date', 'DESC']]
   })
     .then(data => {
       res.send(data);

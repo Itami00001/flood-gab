@@ -1,4 +1,4 @@
-// FIX-12: Служебная таблица Log (не входит в 7 сущностей), проверено 2026-09-21
+// FIX-12: Служебная таблица Log (не входит в 7 сущностей), проверено 2026-09-23
 module.exports = (sequelize, Sequelize) => {
   const Log = sequelize.define("log", {
     level: {
@@ -22,6 +22,11 @@ module.exports = (sequelize, Sequelize) => {
     message: {
       type: Sequelize.TEXT
     }
+  }, {
+    timestamps: true,
+    underscored: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
   });
 
   return Log;

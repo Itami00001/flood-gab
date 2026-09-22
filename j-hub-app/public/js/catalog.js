@@ -4,6 +4,7 @@ async function loadCars(filters = {}) {
     try {
         const cars = await getCars(filters);
         const carGrid = document.getElementById('carGrid');
+        if (!carGrid) return; // Not on catalog page
         carGrid.innerHTML = '';
 
         cars.forEach(car => {

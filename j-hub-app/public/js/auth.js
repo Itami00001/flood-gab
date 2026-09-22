@@ -86,6 +86,9 @@ function quickLogin(username, password) {
     document.getElementById('password').value = password;
 }
 
+// Expose globally for event listeners
+window.quickLogin = quickLogin;
+
 // FIX-8: Профиль использует customer_id из localStorage и query-параметры, проверено 2026-09-21
 async function loadProfile() {
     const user = getCurrentUser();

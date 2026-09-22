@@ -136,9 +136,9 @@ async function topupBalance(customerId) {
 }
 
 async function loadCars() {
-    // FIX-5: Вкладка Авто с кнопкой обновления и подсветкой чётных строк, сделано, проверено 2026-09-21
+    // FIX-16: Вкладка Авто показывает ВСЕ автомобили из БД с их статусом, проверено 2026-09-23
     try {
-        const cars = await getCarStats();
+        const cars = await getCars();
         const carsTable = document.getElementById('carsTable');
         let html = `<button id="refreshCarsBtn" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
         
@@ -150,9 +150,9 @@ async function loadCars() {
                         <th>Авто</th>
                         <th>Статус</th>
                         <th>Цена</th>
-                        <th>Продажи</th>
-                        <th>Аренды</th>
-                        <th>Тест-драйвы</th>
+                        <th>Год</th>
+                        <th>Пробег</th>
+                        <th>Цвет</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -162,9 +162,9 @@ async function loadCars() {
                             <td>${car.brand} ${car.model}</td>
                             <td><span class="status ${car.status}">${translateStatus(car.status)}</span></td>
                             <td>${formatPrice(car.price)} ₽</td>
-                            <td>${car.sales_count}</td>
-                            <td>${car.rentals_count}</td>
-                            <td>${car.test_drive_count}</td>
+                            <td>${car.year}</td>
+                            <td>${car.mileage} км</td>
+                            <td>${car.color}</td>
                         </tr>
                     `).join('')}
                 </tbody>
