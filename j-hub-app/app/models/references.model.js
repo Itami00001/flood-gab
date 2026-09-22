@@ -1,4 +1,4 @@
-// FIX-12: Log - служебная таблица, не входит в 7 сущностей (User, Customer, Employee, Car, Sale, Rental, TestDrive), проверено 2026-09-21
+// FIX-12: Log - служебная таблица, не входит в 7 сущностей (User, Customer, Employee, Car, Sale, Rental, TestDrive), проверено 2026-09-23
 module.exports = (db) => {
   // 1:1 — User ↔ Customer
   db.user.hasOne(db.customer, { foreignKey: 'user_id', as: 'customer', onDelete: 'CASCADE' });
@@ -22,11 +22,17 @@ module.exports = (db) => {
   db.rental.belongsTo(db.employee, { foreignKey: 'employee_id', as: 'employee' });
   db.testDrive.belongsTo(db.employee, { foreignKey: 'employee_id', as: 'employee' });
 
-  // 1:N — Car → Sale / Rental
+  // 1:N — Car → Sale / Rental / TestDrive
   db.car.hasMany(db.sale, { foreignKey: 'car_id', as: 'sales' });
   db.car.hasMany(db.rental, { foreignKey: 'car_id', as: 'rentals' });
+  db.car.hasMany(db.testDrive, { foreignKey: 'car_id', as: 'test_drives' });
   db.sale.belongsTo(db.car, { foreignKey: 'car_id', as: 'car' });
   db.rental.belongsTo(db.car, { foreignKey: 'car_id', as: 'car' });
+  db.testDrive.belongsTo(db.car, { foreignKey: 'car_id', as: 'car' });
+
+  // 1:N — Customer → TestDrive
+  db.customer.hasMany(db.testDrive, { foreignKey: 'customer_id', as: 'test_drives' });
+  db.testDrive.belongsTo(db.customer, { foreignKey: 'customer_id', as: 'customer' });
 
   // M:N — Customer ↔ Car через TestDrive
   db.customer.belongsToMany(db.car, {

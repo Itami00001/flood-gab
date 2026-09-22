@@ -81,9 +81,14 @@ async function handleRegister(event) {
     }
 }
 
-function quickLogin(username, password) {
-    document.getElementById('username').value = username;
-    document.getElementById('password').value = password;
+async function quickLogin(username, password) {
+    try {
+        const user = await login(username, password);
+        setCurrentUser(user);
+        window.location.href = 'index.html';
+    } catch (error) {
+        alert('Ошибка быстрого входа: ' + error.message);
+    }
 }
 
 // Expose globally for event listeners

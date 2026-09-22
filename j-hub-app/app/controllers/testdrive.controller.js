@@ -28,7 +28,7 @@ exports.create = (req, res) => {
     });
 };
 
-// FIX-9: Query-параметры, проверено 2026-09-21
+// FIX-9: Query-параметры, проверено 2026-09-23
 exports.findAll = (req, res) => {
   const { customer_id, employee_id, car_id, status } = req.query;
   const where = {};
@@ -40,6 +40,11 @@ exports.findAll = (req, res) => {
 
   TestDrive.findAll({
     where,
+    include: [
+      { model: db.car, as: 'car' },
+      { model: db.customer, as: 'customer', include: [{ model: db.user, as: 'user' }] },
+      { model: db.employee, as: 'employee', include: [{ model: db.user, as: 'user' }] }
+    ],
     order: [['date', 'DESC']]
   })
     .then(data => {
