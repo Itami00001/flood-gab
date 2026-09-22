@@ -25,13 +25,13 @@
         <div class="container">
             <h2>Админ-панель</h2>
             <div class="admin-tabs">
-                <button class="tab-btn active" onclick="showTab('users')">Пользователи</button>
-                <button class="tab-btn" onclick="showTab('cars')">Авто</button>
-                <button class="tab-btn" onclick="showTab('sales')">Продажи</button>
-                <button class="tab-btn" onclick="showTab('rentals')">Аренда</button>
-                <button class="tab-btn" onclick="showTab('testdrives')">Тест-драйвы</button>
-                <button class="tab-btn" onclick="showTab('statistics')">Статистика</button>
-                <button class="tab-btn" onclick="showTab('logs')">Логи</button>
+                <button class="tab-btn active" data-tab="users">Пользователи</button>
+                <button class="tab-btn" data-tab="cars">Авто</button>
+                <button class="tab-btn" data-tab="sales">Продажи</button>
+                <button class="tab-btn" data-tab="rentals">Аренда</button>
+                <button class="tab-btn" data-tab="testdrives">Тест-драйвы</button>
+                <button class="tab-btn" data-tab="statistics">Статистика</button>
+                <button class="tab-btn" data-tab="logs">Логи</button>
             </div>
             <div class="admin-content">
                 <div id="usersTab" class="tab-content active">
@@ -69,7 +69,7 @@
                                 <option value="error">Error</option>
                             </select>
                         </label>
-                        <button onclick="loadLogs()">Обновить</button>
+                        <button id="refreshLogsBtn">Обновить</button>
                     </div>
                     <div id="logsTable"></div>
                 </div>

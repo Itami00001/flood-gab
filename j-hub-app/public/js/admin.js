@@ -9,8 +9,14 @@ function showTab(tabName) {
         btn.classList.remove('active');
     });
 
-    document.getElementById(`${tabName}Tab`).classList.add('active');
-    event.target.classList.add('active');
+    const tabContent = document.getElementById(`${tabName}Tab`);
+    if (tabContent) {
+        tabContent.classList.add('active');
+    }
+    const tabBtn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+    if (tabBtn) {
+        tabBtn.classList.add('active');
+    }
 
     activeTab = tabName;
     loadTabData(tabName);
@@ -62,7 +68,7 @@ async function loadUsers() {
         const customers = await getCustomers();
         
         const usersTable = document.getElementById('usersTable');
-        let html = `<button onclick="loadUsers()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
+        let html = `<button id="refreshUsersBtn" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
         
         html += `
             <table>
@@ -96,7 +102,7 @@ async function loadUsers() {
                     <td>
                         ${customerId ? `
                             <input type="number" id="topup-${customerId}" placeholder="Сумма" style="width: 80px; padding: 0.25rem; margin-right: 0.5rem;">
-                            <button onclick="topupBalance(${customerId})" style="padding: 0.25rem 0.5rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Пополнить</button>
+                            <button class="topup-btn" data-customer-id="${customerId}" style="padding: 0.25rem 0.5rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Пополнить</button>
                         ` : '-'}
                     </td>
                 </tr>
@@ -134,7 +140,7 @@ async function loadCars() {
     try {
         const cars = await getCarStats();
         const carsTable = document.getElementById('carsTable');
-        let html = `<button onclick="loadCars()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
+        let html = `<button id="refreshCarsBtn" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
         
         html += `
             <table>
@@ -175,7 +181,7 @@ async function loadSales() {
     try {
         const sales = await getSales();
         const salesTable = document.getElementById('salesTable');
-        let html = `<button onclick="loadSales()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
+        let html = `<button id="refreshSalesBtn" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
         
         html += `
             <table>
@@ -212,7 +218,7 @@ async function loadRentals() {
     try {
         const rentals = await getRentals();
         const rentalsTable = document.getElementById('rentalsTable');
-        let html = `<button onclick="loadRentals()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
+        let html = `<button id="refreshRentalsBtn" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
         
         html += `
             <table>
@@ -255,7 +261,7 @@ async function loadTestDrives() {
     try {
         const testDrives = await getTestDrives();
         const testdrivesTable = document.getElementById('testdrivesTable');
-        let html = `<button onclick="loadTestDrives()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
+        let html = `<button id="refreshTestDrivesBtn" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
         
         html += `
             <table>
@@ -351,7 +357,7 @@ async function loadLogs() {
         const logs = await getLogs(levelFilter);
         const logsTable = document.getElementById('logsTable');
         
-        let html = `<button onclick="loadLogs()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
+        let html = `<button id="refreshLogsBtn" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
         
         html += `
             <table>
@@ -389,8 +395,38 @@ async function loadLogs() {
     }
 }
 
-// Initialize
+// Initialize - FIX-15: Event listeners вместо inline onclick, проверено 2026-09-22
 document.addEventListener('DOMContentLoaded', () => {
     loadTabData('users');
     startAutoRefresh();
+
+    // Tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabName = btn.dataset.tab;
+            if (tabName) {
+                showTab(tabName);
+            }
+        });
+    });
+
+    // Refresh buttons - use event delegation since they're recreated
+    document.addEventListener('click', (e) => {
+        if (e.target.id === 'refreshUsersBtn') {
+            loadUsers();
+        } else if (e.target.id === 'refreshCarsBtn') {
+            loadCars();
+        } else if (e.target.id === 'refreshSalesBtn') {
+            loadSales();
+        } else if (e.target.id === 'refreshRentalsBtn') {
+            loadRentals();
+        } else if (e.target.id === 'refreshTestDrivesBtn') {
+            loadTestDrives();
+        } else if (e.target.id === 'refreshLogsBtn') {
+            loadLogs();
+        } else if (e.target.classList.contains('topup-btn')) {
+            const customerId = parseInt(e.target.dataset.customerId);
+            topupBalance(customerId);
+        }
+    });
 });

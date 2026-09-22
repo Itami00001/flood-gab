@@ -18,8 +18,8 @@ async function loadCars(filters = {}) {
                     <p>Статус: <span class="status ${car.status}">${translateStatus(car.status)}</span></p>
                 </div>
                 <div class="actions">
-                    <button onclick="viewCar(${car.id})">Подробнее</button>
-                    <button onclick="quickBuy(${car.id})">Купить</button>
+                    <button class="view-car-btn" data-car-id="${car.id}">Подробнее</button>
+                    <button class="quick-buy-btn" data-car-id="${car.id}">Купить</button>
                 </div>
             `;
             carGrid.appendChild(card);
@@ -30,10 +30,10 @@ async function loadCars(filters = {}) {
 }
 
 function applyFilters() {
-    const brand = document.getElementById('brandFilter').value;
-    const status = document.getElementById('statusFilter').value;
-    const minPrice = document.getElementById('minPrice').value;
-    const maxPrice = document.getElementById('maxPrice').value;
+    const brand = document.getElementById('brandFilter')?.value;
+    const status = document.getElementById('statusFilter')?.value;
+    const minPrice = document.getElementById('minPrice')?.value;
+    const maxPrice = document.getElementById('maxPrice')?.value;
 
     const filters = {};
     if (brand) filters.brand = brand;
@@ -83,7 +83,7 @@ async function loadCarDetail(id) {
 
 async function buyCar() {
     // FIX-3: кнопка Купить работает через async/await, проверено 2026-09-21
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('jhub_user'));
     if (!user) {
         window.location.href = 'login.html';
         return;
@@ -140,7 +140,7 @@ async function buyCar() {
 
 async function rentCar() {
     // FIX-3: кнопка Арендовать работает через async/await с модалкой, проверено 2026-09-21
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('jhub_user'));
     if (!user) {
         window.location.href = 'login.html';
         return;
@@ -200,7 +200,7 @@ async function rentCar() {
 
 async function testDrive() {
     // FIX-3: кнопка Тест-драйв работает через async/await с модалкой, проверено 2026-09-21
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('jhub_user'));
     if (!user) {
         window.location.href = 'login.html';
         return;
@@ -245,7 +245,7 @@ async function testDrive() {
 
 async function quickBuy(id) {
     // FIX-3: кнопка быстрой покупки работает через async/await, проверено 2026-09-21
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('jhub_user'));
     if (!user) {
         window.location.href = 'login.html';
         return;
@@ -301,8 +301,8 @@ async function quickBuy(id) {
 }
 
 async function searchAvailable() {
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
+    const startDate = document.getElementById('startDate')?.value;
+    const endDate = document.getElementById('endDate')?.value;
 
     if (!startDate || !endDate) {
         alert('Пожалуйста, выберите даты');
@@ -330,7 +330,7 @@ async function searchAvailable() {
                     <p>Пробег: ${car.mileage} км</p>
                 </div>
                 <div class="actions">
-                    <button onclick="rentThisCar(${car.id}, '${startDate}', '${endDate}')">Арендовать</button>
+                    <button class="rent-car-btn" data-car-id="${car.id}" data-start="${startDate}" data-end="${endDate}">Арендовать</button>
                 </div>
             `;
             availableCars.appendChild(card);
@@ -388,9 +388,9 @@ async function loadRentalsTable() {
 }
 
 async function filterRentals() {
-    const status = document.getElementById('statusFilter').value;
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
+    const status = document.getElementById('statusFilter')?.value;
+    const startDate = document.getElementById('startDate')?.value;
+    const endDate = document.getElementById('endDate')?.value;
 
     try {
         let rentals = await getRentals();
@@ -468,7 +468,7 @@ function translateStatus(status) {
     return statusMap[status] || status;
 }
 
-// Initialize
+// Initialize - FIX-15: Event listeners вместо inline onclick, проверено 2026-09-22
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('carGrid')) {
         loadCars();
@@ -476,5 +476,66 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (document.getElementById('rentalsTable')) {
         loadRentalsTable();
+    }
+
+    // Event delegation for dynamically created car cards
+    document.addEventListener('click', (e) => {
+        // View car button
+        if (e.target.classList.contains('view-car-btn')) {
+            const carId = e.target.dataset.carId;
+            viewCar(carId);
+        }
+        // Quick buy button
+        if (e.target.classList.contains('quick-buy-btn')) {
+            const carId = parseInt(e.target.dataset.carId);
+            quickBuy(carId);
+        }
+        // Rent car button in available cars search
+        if (e.target.classList.contains('rent-car-btn')) {
+            const carId = parseInt(e.target.dataset.carId);
+            const start = e.target.dataset.start;
+            const end = e.target.dataset.end;
+            rentThisCar(carId, start, end);
+        }
+    });
+
+    // Apply filters button (index.html)
+    const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+    if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener('click', applyFilters);
+    }
+
+    // Quick login buttons (login.html)
+    const quickLoginAdmin = document.getElementById('quickLoginAdmin');
+    if (quickLoginAdmin) {
+        quickLoginAdmin.addEventListener('click', () => quickLogin('admin', 'adminadmin'));
+    }
+    const quickLoginTest = document.getElementById('quickLoginTest');
+    if (quickLoginTest) {
+        quickLoginTest.addEventListener('click', () => quickLogin('test', 'testtest'));
+    }
+
+    // Car detail action buttons (car.html)
+    const buyCarBtn = document.getElementById('buyCarBtn');
+    if (buyCarBtn) {
+        buyCarBtn.addEventListener('click', buyCar);
+    }
+    const rentCarBtn = document.getElementById('rentCarBtn');
+    if (rentCarBtn) {
+        rentCarBtn.addEventListener('click', rentCar);
+    }
+    const testDriveBtn = document.getElementById('testDriveBtn');
+    if (testDriveBtn) {
+        testDriveBtn.addEventListener('click', testDrive);
+    }
+
+    // Rentals page buttons (rentals.html)
+    const filterRentalsBtn = document.getElementById('filterRentalsBtn');
+    if (filterRentalsBtn) {
+        filterRentalsBtn.addEventListener('click', filterRentals);
+    }
+    const resetRentalsBtn = document.getElementById('resetRentalsBtn');
+    if (resetRentalsBtn) {
+        resetRentalsBtn.addEventListener('click', loadRentalsTable);
     }
 });

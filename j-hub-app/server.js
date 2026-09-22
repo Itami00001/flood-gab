@@ -32,6 +32,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
+// FIX-15: Favicon handling to avoid 404, проверено 2026-09-22
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // Ignore /.well-known/ requests
 app.use('/.well-known', (req, res) => res.status(204).end());
 
