@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J HUB - Регистрация</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">J HUB</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Каталог</a></li>
+                <li><a href="rentals.html">Аренда</a></li>
+                <li><a href="profile.html">Профиль</a></li>
+                <li><a href="login.html" id="loginLink">Войти</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+    <section class="login">
+        <div class="container">
+            <div class="login-form">
+                <h2>Регистрация</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label>Имя пользователя:</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ФИО:</label>
+                        <input type="text" id="full_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль:</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Телефон:</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    <button type="submit">Создать аккаунт</button>
+                </form>
+                <p>Есть аккаунт? <a href="login.html">Войти</a></p>
+            </div>
+        </div>
+    </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 J HUB. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerForm = document.getElementById('registerForm');
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const userData = {
+                        username: document.getElementById('username').value,
+                        email: document.getElementById('email').value,
+                        full_name: document.getElementById('full_name').value,
+                        password: document.getElementById('password').value,
+                        phone: document.getElementById('phone').value
+                    };
+                    try {
+                        await register(userData);
+                        // Auto login after registration
+                        const user = await login(userData.username, userData.password);
+                        const { setCurrentUser } = window;
+                        if (setCurrentUser) {
+                            setCurrentUser(user);
+                        } else {
+                            // fallback if auth.js not loaded properly
+                            localStorage.setItem('jhub_user', JSON.stringify(user));
+                        }
+                        window.location.href = 'index.html';
+                    } catch (error) {
+                        alert('Ошибка регистрации: ' + error.message);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

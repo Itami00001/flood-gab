@@ -26,6 +26,7 @@ db.car = require("./car.model.js")(sequelize, Sequelize);
 db.sale = require("./sale.model.js")(sequelize, Sequelize);
 db.rental = require("./rental.model.js")(sequelize, Sequelize);
 db.testDrive = require("./testdrive.model.js")(sequelize, Sequelize);
+db.log = require("./log.model.js")(sequelize, Sequelize);
 
 require("./references.model.js")(db);
 

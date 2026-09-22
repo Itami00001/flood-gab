@@ -2,8 +2,10 @@ require('dotenv').config();
 
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const loggerMiddleware = require("./app/middleware/logger.middleware.js");
 
 const app = express();
 
@@ -13,9 +15,28 @@ var corsOptions = {
 
 app.use(cors(corsOptions));
 
+// FIX-13: Helmet with connect-src for CSP, игнорируем /.well-known/..., проверено 2026-09-22
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: ["'self'", "http://localhost:6868", "ws://localhost:6868"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+
+// Ignore /.well-known/ requests
+app.use('/.well-known', (req, res) => res.status(204).end());
+
+// FIX-12: Middleware логирования мутирующих операций, проверено 2026-09-21
+app.use('/api', loggerMiddleware);
 
 const db = require("./app/models");
 

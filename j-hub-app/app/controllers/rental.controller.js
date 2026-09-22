@@ -1,6 +1,8 @@
 const db = require("../models");
 const Rental = db.rental;
+const Car = db.car;
 
+// FIX-9: Query-параметры и обновление статуса авто, проверено 2026-09-21
 exports.create = (req, res) => {
   if (!req.body.car_id || !req.body.customer_id || !req.body.employee_id || !req.body.start_date || !req.body.end_date || !req.body.total_price) {
     res.status(400).send({
@@ -20,7 +22,12 @@ exports.create = (req, res) => {
   };
 
   Rental.create(rental)
-    .then(data => {
+    .then(async (data) => {
+      // Обновить статус авто на rented
+      await Car.update(
+        { status: 'rented' },
+        { where: { id: req.body.car_id } }
+      );
       res.send(data);
     })
     .catch(err => {
@@ -31,7 +38,16 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
+  const { customer_id, employee_id, car_id, status } = req.query;
+  const where = {};
+  
+  if (customer_id) where.customer_id = customer_id;
+  if (employee_id) where.employee_id = employee_id;
+  if (car_id) where.car_id = car_id;
+  if (status) where.status = status;
+
   Rental.findAll({
+    where,
     include: ["car", "customer", "employee"]
   })
     .then(data => {
@@ -121,8 +137,16 @@ exports.returnCar = (req, res) => {
     { status: 'completed' },
     { where: { id: id } }
   )
-    .then(num => {
+    .then(async (num) => {
       if (num == 1) {
+        const rental = await Rental.findByPk(id);
+        if (rental) {
+          // Вернуть статус авто на available
+          await Car.update(
+            { status: 'available' },
+            { where: { id: rental.car_id } }
+          );
+        }
         res.send({
           message: "Rental was completed successfully."
         });

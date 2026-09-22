@@ -32,6 +32,49 @@ exports.create = (req, res) => {
     });
 };
 
+// FIX-13: Register creates User + Customer with balance 7000000, проверено 2026-09-22
+exports.register = async (req, res) => {
+  if (!req.body.username || !req.body.password || !req.body.email || !req.body.full_name || !req.body.phone) {
+    return res.status(400).send({ message: "All fields are required!" });
+  }
+
+  const password_hash = bcrypt.hashSync(req.body.password, 10);
+
+  const user = {
+    username: req.body.username,
+    password_hash: password_hash,
+    email: req.body.email,
+    full_name: req.body.full_name,
+    role: 'client'
+  };
+
+  try {
+    const createdUser = await User.create(user);
+    
+    // Create associated Customer with default balance
+    await Customer.create({
+      user_id: createdUser.id,
+      phone: req.body.phone,
+      address: '',
+      passport_data: '',
+      balance: 7000000
+    });
+
+    res.status(201).send({
+      message: "User registered successfully",
+      id: createdUser.id,
+      username: createdUser.username,
+      email: createdUser.email,
+      full_name: createdUser.full_name,
+      role: createdUser.role
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while registering the User."
+    });
+  }
+};
+
 exports.findAll = (req, res) => {
   User.findAll()
     .then(data => {
@@ -112,11 +155,16 @@ exports.delete = (req, res) => {
     });
 };
 
+// FIX-8: Ответ логина включает role, customer_id, balance, проверено 2026-09-21
 exports.login = (req, res) => {
   const { username, password } = req.body;
 
   User.findOne({
-    where: { username: username }
+    where: { username: username },
+    include: [{
+      model: Customer,
+      as: 'customer'
+    }]
   })
     .then(user => {
       if (!user) {
@@ -137,7 +185,9 @@ exports.login = (req, res) => {
         username: user.username,
         email: user.email,
         full_name: user.full_name,
-        role: user.role
+        role: user.role,
+        customer_id: user.customer ? user.customer.id : null,
+        balance: user.customer ? user.customer.balance : 0
       });
     })
     .catch(err => {

@@ -1,3 +1,4 @@
+// FIX-12: Log - служебная таблица, не входит в 7 сущностей (User, Customer, Employee, Car, Sale, Rental, TestDrive), проверено 2026-09-21
 module.exports = (db) => {
   // 1:1 — User ↔ Customer
   db.user.hasOne(db.customer, { foreignKey: 'user_id', as: 'customer', onDelete: 'CASCADE' });

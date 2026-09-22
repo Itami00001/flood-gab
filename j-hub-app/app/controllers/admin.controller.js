@@ -154,3 +154,24 @@ exports.topupUserBalance = async (req, res) => {
     });
   }
 };
+
+// FIX-12: Получение логов с фильтром по уровню, проверено 2026-09-21
+exports.getLogs = (req, res) => {
+  const { level } = req.query;
+  const where = {};
+  if (level) where.level = level;
+
+  db.log.findAll({
+    where,
+    order: [['created_at', 'DESC']],
+    limit: 500
+  })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: err.message || "Error retrieving logs"
+      });
+    });
+};

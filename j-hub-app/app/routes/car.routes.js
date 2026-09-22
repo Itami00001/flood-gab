@@ -33,6 +33,18 @@
  *                 type: string
  *               vin:
  *                 type: string
+ *             example:
+ *               articul: "TOY003"
+ *               brand: "Toyota"
+ *               model: "Corolla"
+ *               year: 2024
+ *               color: "Blue"
+ *               mileage: 0
+ *               price: 2000000
+ *               status: "available"
+ *               equipment: "Standard"
+ *               photo_url: ""
+ *               vin: "JTDKB20U5A0000002"
  *     responses:
  *       201:
  *         description: Car created successfully

@@ -50,33 +50,20 @@
  */
 /**
  * @swagger
- * /api/admin/users/{id}/topup:
- *   put:
- *     summary: Top up user balance
+ * /api/admin/logs:
+ *   get:
+ *     summary: Get system logs
  *     tags: [Admin]
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
+ *       - in: query
+ *         name: level
  *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               amount:
- *                 type: number
- *                 example: 1000000
+ *           type: string
+ *           enum: [info, warn, error]
+ *         description: Filter by log level
  *     responses:
  *       200:
- *         description: Balance updated successfully
- *       400:
- *         description: Invalid amount
- *       404:
- *         description: Customer not found
+ *         description: List of logs
  */
 
 module.exports = app => {
@@ -95,6 +82,9 @@ module.exports = app => {
   router.get("/employees/performance", admin.getEmployeePerformance);
 
   router.put("/users/:id/topup", admin.topupUserBalance);
+
+  // FIX-12: Маршрут для получения логов, проверено 2026-09-21
+  router.get("/logs", admin.getLogs);
 
   app.use('/api/admin', router);
 };

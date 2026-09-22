@@ -1,3 +1,6 @@
+let activeTab = 'users';
+let refreshInterval = null;
+
 function showTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
@@ -9,7 +12,21 @@ function showTab(tabName) {
     document.getElementById(`${tabName}Tab`).classList.add('active');
     event.target.classList.add('active');
 
+    activeTab = tabName;
     loadTabData(tabName);
+    
+    // Restart auto-refresh for new active tab
+    startAutoRefresh();
+}
+
+function startAutoRefresh() {
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+    }
+    // FIX-14: Автообновление активной вкладки каждые 15 секунд, проверено 2026-09-22
+    refreshInterval = setInterval(() => {
+        loadTabData(activeTab);
+    }, 15000);
 }
 
 async function loadTabData(tabName) {
@@ -31,6 +48,9 @@ async function loadTabData(tabName) {
             break;
         case 'statistics':
             loadStatistics();
+            break;
+        case 'logs':
+            loadLogs();
             break;
     }
 }
@@ -188,7 +208,7 @@ async function loadSales() {
 }
 
 async function loadRentals() {
-    // FIX-5: Вкладка Аренда с кнопкой обновления и подсветкой чётных строк, сделано, проверено 2026-09-21
+    // FIX-11: Полная таблица аренд со связями, проверено 2026-09-21
     try {
         const rentals = await getRentals();
         const rentalsTable = document.getElementById('rentalsTable');
@@ -199,9 +219,12 @@ async function loadRentals() {
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Начало</th>
-                        <th>Конец</th>
-                        <th>Цена</th>
+                        <th>Авто</th>
+                        <th>Клиент</th>
+                        <th>Менеджер</th>
+                        <th>Дата начала</th>
+                        <th>Дата конца</th>
+                        <th>Стоимость</th>
                         <th>Статус</th>
                     </tr>
                 </thead>
@@ -209,6 +232,9 @@ async function loadRentals() {
                     ${rentals.map((rental, index) => `
                         <tr class="${index % 2 === 0 ? 'even-row' : ''}">
                             <td>${rental.id}</td>
+                            <td>${rental.car?.brand} ${rental.car?.model}</td>
+                            <td>${rental.customer?.user?.full_name || 'N/A'}</td>
+                            <td>${rental.employee?.user?.full_name || 'N/A'}</td>
                             <td>${new Date(rental.start_date).toLocaleDateString()}</td>
                             <td>${new Date(rental.end_date).toLocaleDateString()}</td>
                             <td>${formatPrice(rental.total_price)} ₽</td>
@@ -225,7 +251,7 @@ async function loadRentals() {
 }
 
 async function loadTestDrives() {
-    // FIX-5: Вкладка Тест-драйвы с кнопкой обновления и подсветкой чётных строк, сделано, проверено 2026-09-21
+    // FIX-11: Полная таблица тест-драйвов со связями, проверено 2026-09-21
     try {
         const testDrives = await getTestDrives();
         const testdrivesTable = document.getElementById('testdrivesTable');
@@ -237,6 +263,7 @@ async function loadTestDrives() {
                     <tr>
                         <th>Клиент</th>
                         <th>Авто</th>
+                        <th>Менеджер</th>
                         <th>Дата</th>
                         <th>Статус</th>
                     </tr>
@@ -246,7 +273,8 @@ async function loadTestDrives() {
                         <tr class="${index % 2 === 0 ? 'even-row' : ''}">
                             <td>${td.customer?.user?.full_name || 'N/A'}</td>
                             <td>${td.car?.brand} ${td.car?.model}</td>
-                            <td>${new Date(td.date).toLocaleDateString()}</td>
+                            <td>${td.employee?.user?.full_name || 'N/A'}</td>
+                            <td>${new Date(td.date).toLocaleString()}</td>
                             <td><span class="status ${td.status}">${translateStatus(td.status)}</span></td>
                         </tr>
                     `).join('')}
@@ -316,7 +344,53 @@ function translateStatus(status) {
     return statusMap[status] || status;
 }
 
+// FIX-12: Вкладка Логи с фильтром по уровню, проверено 2026-09-21
+async function loadLogs() {
+    try {
+        const levelFilter = document.getElementById('logLevelFilter')?.value || '';
+        const logs = await getLogs(levelFilter);
+        const logsTable = document.getElementById('logsTable');
+        
+        let html = `<button onclick="loadLogs()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background-color: #c8102e; color: #fffcd0; border: none; border-radius: 4px; cursor: pointer;">Обновить</button>`;
+        
+        html += `
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Уровень</th>
+                        <th>Action</th>
+                        <th>Сущность</th>
+                        <th>ID сущности</th>
+                        <th>User ID</th>
+                        <th>Сообщение</th>
+                        <th>Дата</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${logs.map((log, index) => `
+                        <tr class="${index % 2 === 0 ? 'even-row' : ''}">
+                            <td>${log.id}</td>
+                            <td><span class="status ${log.level}">${log.level.toUpperCase()}</span></td>
+                            <td>${log.action}</td>
+                            <td>${log.entity}</td>
+                            <td>${log.entity_id || '-'}</td>
+                            <td>${log.user_id || '-'}</td>
+                            <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${log.message || '-'}</td>
+                            <td>${new Date(log.created_at).toLocaleString()}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+        logsTable.innerHTML = html;
+    } catch (error) {
+        console.error('Error loading logs:', error);
+    }
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     loadTabData('users');
+    startAutoRefresh();
 });

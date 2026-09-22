@@ -23,6 +23,13 @@
  *                 type: string
  *               status:
  *                 type: string
+ *             example:
+ *               car_id: 1
+ *               customer_id: 1
+ *               employee_id: 1
+ *               total_price: 2500000
+ *               payment_method: "card"
+ *               status: "pending"
  *     responses:
  *       201:
  *         description: Sale created successfully

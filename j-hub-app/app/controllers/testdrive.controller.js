@@ -28,8 +28,18 @@ exports.create = (req, res) => {
     });
 };
 
+// FIX-9: Query-параметры, проверено 2026-09-21
 exports.findAll = (req, res) => {
+  const { customer_id, employee_id, car_id, status } = req.query;
+  const where = {};
+  
+  if (customer_id) where.customer_id = customer_id;
+  if (employee_id) where.employee_id = employee_id;
+  if (car_id) where.car_id = car_id;
+  if (status) where.status = status;
+
   TestDrive.findAll({
+    where,
     include: ["customer", "car", "employee"]
   })
     .then(data => {

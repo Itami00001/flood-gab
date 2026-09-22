@@ -86,6 +86,12 @@ async function getTestDrives() {
     return fetchAPI('/testdrives');
 }
 
+// Logs API
+async function getLogs(level = '') {
+    const params = level ? `?level=${level}` : '';
+    return fetchAPI(`/admin/logs${params}`);
+}
+
 // Admin API
 async function getAdminStats() {
     return fetchAPI('/admin/statistics/overview');
@@ -112,10 +118,6 @@ async function getUsers() {
 
 async function getCustomers() {
     return fetchAPI('/customers');
-}
-
-async function getRentals() {
-    return fetchAPI('/rentals');
 }
 
 // Customers API
@@ -173,7 +175,7 @@ function showToast(message, type = 'info') {
 
 // Balance display update function
 async function updateBalanceDisplay() {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('jhub_user'));
     if (!user) return;
     
     try {
