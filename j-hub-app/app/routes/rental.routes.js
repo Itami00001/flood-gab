@@ -144,6 +144,10 @@ module.exports = app => {
 
   router.get("/", rental.findAll);
 
+  // Важно: конкретный маршрут /available должен идти ДО /:id,
+  // иначе Express трактует "available" как id и возвращает 500.
+  router.get("/available", rental.getAvailable);
+
   router.get("/:id", rental.findOne);
 
   router.put("/:id", rental.update);
@@ -151,8 +155,6 @@ module.exports = app => {
   router.delete("/:id", rental.delete);
 
   router.put("/:id/return", rental.returnCar);
-
-  router.get("/available", rental.getAvailable);
 
   app.use('/api/rentals', router);
 };

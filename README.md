@@ -1,80 +1,114 @@
-# J Hub - Автосалон
+# J Hub — Автосалон
 
 Курсовой проект по дисциплине «Базы данных». Веб-приложение для учёта продаж, аренды и тест-драйвов автомобилей в салоне J Hub.
 
-## Описание проекта
+Стек: Node.js 18 + Express 4 + Sequelize 6 + PostgreSQL 15 + Docker Compose + Swagger (OpenAPI 3.0).
 
-J Hub — это система управления автосалоном, которая позволяет:
-- Управлять каталогом автомобилей
-- Оформлять продажи и аренду автомобилей
-- Записывать клиентов на тест-драйвы
-- Отслеживать статистику и отчёты
-- Управлять пользователями и ролями (admin, manager, client)
-
-## Технологический стек
-
-- **Backend:** Node.js 18 + Express 4
-- **База данных:** PostgreSQL 15
-- **ORM:** Sequelize 6
-- **Контейнеризация:** Docker Compose
-- **API документация:** Swagger (OpenAPI 3.0)
-- **Frontend:** HTML + CSS + JavaScript
-
-## Установка и запуск
+## Быстрый старт на другом устройстве (Docker)
 
 ### Требования
 
-- Docker
-- Docker Compose
 - Git
+- Docker Desktop 4+ (с Docker Compose v2)
+- Свободные порты: `6868` (сайт/API) и `5433` (PostgreSQL)
 
-### Установка
+### 1. Клонировать репозиторий
 
-1. Клонируйте репозиторий:
 ```bash
 git clone https://github.com/Itami00001/flood-gab.git
 cd flood-gab
 ```
 
-2. Запустите проект с помощью Docker Compose:
-```bash
-docker-compose up -d --build
+### 2. Создать `.env` в корне проекта
+
+Файл `.env` не хранится в git (см. `.gitignore`), поэтому создайте его вручную:
+
+```
+POSTGRESDB_USER=postgres
+POSTGRESDB_ROOT_PASSWORD=123456
+POSTGRESDB_DATABASE=j-hub-db
+POSTGRESDB_LOCAL_PORT=5433
+POSTGRESDB_DOCKER_PORT=5432
+
+NODE_LOCAL_PORT=6868
+NODE_DOCKER_PORT=8080
 ```
 
-3. Для инициализации тестовых данных выполните:
+> Если порты заняты — поменяйте только `*_LOCAL_PORT` (левые числа).
+
+### 3. Поднять контейнеры
+
 ```bash
-docker-compose exec app npm run seed
+docker compose up -d --build
 ```
 
-### Доступ к приложению
+### 4. Заполнить БД тестовыми данными
 
-- **Веб-интерфейс:** http://localhost:6868/
-- **Swagger API:** http://localhost:6868/api-docs
-- **База данных:** localhost:5433
+```bash
+docker exec j-hub-app npm run seed
+```
+
+> Внимание: seed пересоздаёт таблицы (`sync({ force: true })`) — все введённые вручную данные будут стёрты.
+
+### 5. Проверка
+
+- Сайт: http://localhost:6868/
+- Swagger: http://localhost:6868/api-docs
+- Вход как admin: `admin` / `adminadmin` (на странице `login.html` есть кнопки быстрого входа)
+- Админ-панель: http://localhost:6868/admin.html → вкладка «Авто» показывает все 10 автомобилей со статусами
+
+## Доступы
+
+| Что | Адрес / значение |
+|---|---|
+| Сайт | http://localhost:6868/ |
+| Swagger UI | http://localhost:6868/api-docs |
+| PostgreSQL (для pgAdmin) | host `localhost`, порт `5433`, БД `j-hub-db`, пользователь `postgres`, пароль `123456` |
 
 ### Тестовые пользователи
 
-- **Admin:** username: `admin`, password: `adminadmin`
-- **Client:** username: `test`, password: `testtest`
+| Username | Password | Роль | Профиль | Баланс |
+|---|---|---|---|---|
+| `admin` | `adminadmin` | admin | Employee (менеджер) | — (нет customer-профиля, баланс 0) |
+| `test` | `testtest` | client | Customer | 7 000 000 COIN |
 
-## API документация
+Быстрый вход: страница `login.html`, кнопки «Admin» и «Test User».
 
-API документация доступна по адресу http://localhost:6868/api-docs
+### Что создаёт seed
 
-### Основные эндпоинты
+- 2 пользователя (`admin`, `test`), 1 сотрудник, 1 клиент
+- 10 автомобилей (Toyota, Nissan, Honda, Mazda, Mitsubishi, Subaru, Lexus, Infiniti, Acura)
+- 3 продажи (2 `completed`, 1 `pending`; авто завершённых продаж → `sold`)
+- 3 аренды (2 `completed`, 1 `active`; авто активной аренды → `rented`)
+- 4 тест-драйва (2 `done`, 2 `scheduled`)
 
-- `POST /api/users/register` - Регистрация пользователя
-- `POST /api/users/login` - Вход в систему
-- `GET /api/cars` - Получить список автомобилей
-- `POST /api/sales` - Создать продажу
-- `POST /api/rentals` - Создать аренду
-- `POST /api/testdrives` - Создать тест-драйв
-- `GET /api/admin/statistics/overview` - Получить статистику
+## API
+
+Полное описание — в Swagger: http://localhost:6868/api-docs (теги Users, Customers, Employees, Cars, Sales, Rentals, TestDrives, Admin).
+
+Ключевые эндпоинты (проверены вживую):
+
+- `POST /api/users/register` — регистрация (создаёт User + Customer с балансом 7 000 000)
+- `POST /api/users/login` — вход (возвращает `role`, `customer_id`, `balance`)
+- `GET /api/users/top/spenders?limit=` — топ клиентов по сумме покупок (raw SQL)
+- `GET /api/cars` — все авто (+ фильтры `?brand=&status=&min_price=&max_price=`)
+- `GET /api/cars/:id/details` — карточка авто с последней продажей (raw SQL)
+- `PUT /api/sales/:id/complete` — завершить продажу (авто → `sold`)
+- `GET /api/sales/statistics/sales` — выручка по месяцам (raw SQL)
+- `PUT /api/rentals/:id/return` — завершить аренду (авто → `available`)
+- `GET /api/rentals/available?start=&end=` — свободные авто на период (raw SQL, `OVERLAPS`)
+- `GET /api/testdrives/schedule?date=` — расписание тест-драйвов на дату (raw SQL)
+- `GET /api/admin/statistics/overview` — сводка (пользователи, авто, продажи, аренды, выручка)
+- `GET /api/admin/cars/stats` — авто + счётчики продаж/аренд/тест-драйвов
+- `GET /api/admin/testdrives/popular` — топ-5 авто по тест-драйвам (raw SQL)
+- `GET /api/admin/employees/performance` — эффективность сотрудников (raw SQL)
+- `GET /api/admin/logs?level=` — системные логи (info/warn/error)
+- `PUT /api/admin/users/:id/topup` — пополнение баланса клиента
 
 ## Структура проекта
 
 ```
-j-hub/
+flood-gab/
 ├── j-hub-app/
 │   ├── app/
 │   │   ├── config/
@@ -98,7 +132,8 @@ j-hub/
 │   │   │   ├── car.model.js
 │   │   │   ├── sale.model.js
 │   │   │   ├── rental.model.js
-│   │   │   └── testdrive.model.js
+│   │   │   ├── testdrive.model.js
+│   │   │   └── log.model.js
 │   │   ├── routes/
 │   │   │   ├── user.routes.js
 │   │   │   ├── customer.routes.js
@@ -109,7 +144,8 @@ j-hub/
 │   │   │   ├── testdrive.routes.js
 │   │   │   └── admin.routes.js
 │   │   └── middleware/
-│   │       └── auth.middleware.js
+│   │       ├── auth.middleware.js
+│   │       └── logger.middleware.js
 │   ├── public/
 │   │   ├── index.html
 │   │   ├── car.html
@@ -117,6 +153,7 @@ j-hub/
 │   │   ├── profile.html
 │   │   ├── admin.html
 │   │   ├── login.html
+│   │   ├── register.html
 │   │   ├── css/
 │   │   │   └── style.css
 │   │   └── js/
@@ -128,75 +165,76 @@ j-hub/
 │   ├── Dockerfile
 │   ├── package.json
 │   └── server.js
-├── .env
+├── .env                # не в git, создать по п. 2
 ├── docker-compose.yml
 └── README.md
 ```
 
 ## Модель данных
 
-Проект включает 7 сущностей:
+Ровно 7 сущностей (+ служебная таблица `logs` вне подсчёта):
 
-1. **User** - учётные записи пользователей
-2. **Customer** - профиль клиента
-3. **Employee** - профиль сотрудника
-4. **Car** - автомобиль
-5. **Sale** - продажа
-6. **Rental** - аренда
-7. **TestDrive** - тест-драйв (связующая таблица M:N)
+1. **User** — учётные записи (`username` UQ, `email` UQ, `password_hash` bcrypt, `full_name`, `role`: admin/manager/client)
+2. **Customer** — профиль клиента (`user_id` UQ FK, `phone`, `address`, `passport_data`, `balance` DEFAULT 7 000 000)
+3. **Employee** — профиль сотрудника (`user_id` UQ FK, `position`, `phone`, `hire_date`)
+4. **Car** — автомобиль (`articul` UQ, `brand`, `model`, `year`, `color`, `mileage`, `price`, `status`: available/sold/rented/service, `equipment`, `photo_url`, `vin` UQ)
+5. **Sale** — продажа (`car_id`, `customer_id`, `employee_id`, `sale_date`, `total_price`, `payment_method`, `status`: pending/completed/cancelled)
+6. **Rental** — аренда (`car_id`, `customer_id`, `employee_id`, `start_date`, `end_date`, `total_price`, `status`: active/completed/cancelled)
+7. **TestDrive** — тест-драйв, связующая M:N (`customer_id` + `car_id` + `date` — составной PK, `employee_id`, `status`: scheduled/done/cancelled)
 
-### Связи между сущностями
+Связи (`app/models/references.model.js`, поля в `snake_case` через `underscored: true`):
 
-- User 1:1 Customer
-- User 1:1 Employee
-- Customer 1:N Sale
-- Customer 1:N Rental
-- Customer M:N Car (через TestDrive)
-- Employee 1:N Sale
-- Employee 1:N Rental
-- Employee 1:N TestDrive
-- Car 1:N Sale
-- Car 1:N Rental
+- User 1:1 Customer, User 1:1 Employee (CASCADE при удалении)
+- Customer 1:N Sale, Customer 1:N Rental, Customer 1:N TestDrive
+- Employee 1:N Sale, Employee 1:N Rental, Employee 1:N TestDrive
+- Car 1:N Sale, Car 1:N Rental, Car 1:N TestDrive
+- Customer M:N Car через TestDrive
 
-## Роли пользователей
+## Роли
 
-- **admin** - полный доступ ко всем функциям
-- **manager** - управление авто, продажами, арендой, тест-драйвами
-- **client** - просмотр каталога, оформление заказов, просмотр своих записей
+- **admin** — всё: пользователи, авто, продажи, аренда, тест-драйвы, статистика, логи
+- **manager** — авто, продажи, аренда, тест-драйвы, клиенты (без управления пользователями)
+- **client** — каталог, оформление тест-драйва/аренды/покупки, свой профиль
 
-## Разработка
+## Админ-панель
 
-### Локальная разработка
+`admin.html`, 7 вкладок с кнопкой «Обновить» у каждой таблицы: Пользователи (баланс + пополнение), Авто (все авто со статусом), Продажи, Аренда, Тест-драйвы, Статистика (карточки: пользователи, авто, продажи, аренды, тест-драйвы, выручка), Логи (фильтр info/warn/error).
 
-Для локальной разработки без Docker:
+## Полезные команды
 
-1. Установите зависимости:
+```bash
+docker compose ps                 # статус контейнеров
+docker logs j-hub-app --tail 50   # логи приложения
+docker compose restart            # перезапуск без пересборки
+docker compose up -d --build      # пересборка после изменения кода/статикі
+docker exec j-hub-app npm run seed # пересев БД (стирает данные!)
+```
+
+## Troubleshooting
+
+- **Порты заняты** — смените `NODE_LOCAL_PORT` / `POSTGRESDB_LOCAL_PORT` в `.env` и повторите `up -d`.
+- **Старый интерфейс после правок JS/HTML** — нужен `docker compose up -d --build` (образ копирует код при сборке, `restart` недостаточно).
+- **Пути с OneDrive/пробелами (Windows)** — команды выполнять из корня `flood-gab`, пути в кавычках.
+- **`/api/rentals/available` возвращал 500** — исправлено порядком роутов (`/available` до `/:id`).
+
+## Локальная разработка без Docker
+
 ```bash
 cd j-hub-app
 npm install
-```
-
-2. Настройте переменные окружения в `.env`
-
-3. Запустите сервер:
-```bash
-npm start
-```
-
-4. Для инициализации данных:
-```bash
-npm run seed
+npm start        # нужен доступный PostgreSQL и переменные окружения
+npm run seed     # тестовые данные
 ```
 
 ## Лицензия
 
-Этот проект создан в учебных целях.
+Учебный проект.
 
-## Контактная информация
+## Контакты
 
 - Автор: курсовой проект по БД
-- Год: 2024
+- Год: 2026
 
 ## Благодарности
 
-Проект разработан с использованием материалов лабораторных работ ЛР-8...ЛР-14.
+Материалы лабораторных работ ЛР-8…ЛР-14.
