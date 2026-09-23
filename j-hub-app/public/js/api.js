@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:6868/api';
+const API_BASE = '/api';
 
 async function fetchAPI(endpoint, options = {}) {
     const url = `${API_BASE}${endpoint}`;

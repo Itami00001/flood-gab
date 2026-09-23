@@ -464,7 +464,13 @@ function translateStatus(status) {
         'available': 'Доступен',
         'sold': 'Продан',
         'rented': 'В аренде',
-        'service': 'На обслуживании'
+        'service': 'На обслуживании',
+        'pending': 'Ожидание',
+        'completed': 'Завершено',
+        'active': 'Активен',
+        'cancelled': 'Отменено',
+        'scheduled': 'Запланирован',
+        'done': 'Выполнен'
     };
     return statusMap[status] || status;
 }

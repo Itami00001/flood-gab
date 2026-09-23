@@ -273,6 +273,12 @@ const seed = async () => {
 
     console.log("Test drives created:", 4);
 
+    // Синхронизировать статусы авто с созданными сделками (как делают контроллеры sale/rental):
+    // завершённые продажи -> sold, активная аренда -> rented
+    await db.car.update({ status: 'sold' }, { where: { id: [createdCars[0].id, createdCars[1].id] } });
+    await db.car.update({ status: 'rented' }, { where: { id: createdCars[5].id } });
+    console.log("Car statuses synced: 2 sold, 1 rented, rest available");
+
     console.log("Seed completed successfully!");
     process.exit(0);
   } catch (error) {
